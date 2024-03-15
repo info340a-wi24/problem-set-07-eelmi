@@ -4,10 +4,27 @@ import TeamSelectForm from './TeamSelectForm';
 
 function App(props) {
 
-  //Your work goes here
 
+  //Your work goes here
+  const [selectedTeam, setSelectedTeam] = useState('');
+  const [includeRunnerUps, setIncludeRunnerUps] = useState(false);
+
+
+  const applyFilter = (teamName, includeRunnerUp) => {
+    setSelectedTeam(teamName);
+    setIncludeRunnerUps(includeRunnerUp);
+  };
+  const displayedData = props.gameData.filter(game => {
+    if (selectedTeam === '') return true; 
+    if (game.winner === selectedTeam) return true; 
+    if (includeRunnerUps && game.runner_up === selectedTeam) return true; 
+  });
+
+  
   //get sorted list of unique teamNames. reduce array of objects into array of strings, 
   //convert to Set to get uniques, spread back into array, and sort 
+
+
   const uniqueTeamNames = [...new Set(props.gameData.reduce((all, current) => {
     return all.concat([current.winner, current.runner_up]);
   }, []))].sort();
@@ -17,10 +34,10 @@ function App(props) {
       <header className="mb-3">
         <h1>FIFA World Cup Finals</h1>
       </header>
-    
+
       <main>
-        <TeamSelectForm teamOptions={uniqueTeamNames} />
-        <GameDataTable data={props.gameData} />
+        <TeamSelectForm teamOptions={uniqueTeamNames} applyFilterCallback={applyFilter} />
+        <GameDataTable data={displayedData} />
       </main>
 
       <footer>
